@@ -1,4 +1,4 @@
-## `Balloon` Class
+# `Balloon` Class
 
 The following class creates a new tracker for a balloon, and is responsible for stepping a balloon through its flight (`tick`ing). No physical quantities about the balloon are identified, and are considered covered by the noise that is added to every changing variable about the balloon.
 
