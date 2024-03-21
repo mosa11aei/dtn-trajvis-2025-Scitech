@@ -16,7 +16,7 @@ The vertical position of the balloon is determined based on velocity obtained fr
 
 During the first phase of flight (`BalloonStatus.ASCENT`), the vertical velocity is maintained around 5m/s, with random noise added considering the dynamics of flight. During the second phase (`BalloonStatus.POP`), the vertical velocity immediately dips to a value between -18m/s and -21m/s, and in the last phase (`BalloonStatus.FALL`) increases as a function of:
 
-$$f(t) = -15 \cdot (1 + e^{-0.000001(t-t_{pop})}) + 10$$
+$$v(t) = -15 \cdot (1 + e^{-0.000001(t-t_{pop})}) + 10$$
 
 ## Initialization
 

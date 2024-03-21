@@ -12,7 +12,7 @@ This file includes default variables and utility functions that are useful throu
 
 ### point_to_matrix_coord(x, y)
 
-This function takes graphical coordinates as an (x,y) pair and converts them to matrix indices. The wind map is centered on (0,0), which means WindMap[0][0] is **not** coordinate (0,0).
+This function takes graphical coordinates as an (x,y) pair and converts them to matrix indices. The wind map is centered on (0,0), which means `WindMap[0][0]` is **not** coordinate (0,0).
 
 ### round_threshold(a, step)
 
@@ -24,4 +24,4 @@ Takes the given balloon pop time and current flight time to calculate the veloci
 
 ### spherical_to_vector(spherical)
 
-Takes the angles of a spherical coordinate system ($\phi$,$\theta$) and turns them into a unit, rectangular 3D vector.
+Takes the angles of a spherical coordinate system ($\phi$, $\theta$) and turns them into a unit, 3D vector in rectangular coordinates.
