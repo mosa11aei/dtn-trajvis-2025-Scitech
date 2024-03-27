@@ -44,6 +44,10 @@ Set the start point of the balloon at the given coordinate on the wind map assig
 
 Progress the balloon through one time interval of flight. The time interval can be modified in the [default.py](/components/defaults.py) file.
 
+### Balloon.add_antenna(antenna)
+
+Add an antenna/radio system to a given balloon. See [NetworkAnalyzer](./NetworkAnalyzer.md).
+
 ## Balloon Data
 
 - `name`: Name of the balloon
