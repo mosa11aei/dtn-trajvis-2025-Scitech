@@ -1,4 +1,4 @@
-from defaults import *
+from components.defaults import *
 import random
 from enum import Enum
 import matplotlib.pyplot as plt

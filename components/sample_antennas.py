@@ -1,4 +1,4 @@
-from networkanalyzer import Antenna, RadioType
+from components.networkanalyzer import Antenna, RadioType
 
 # Molex strip antenna (with no pointing loss)
 MolexNoPL = Antenna(name="Molex, no Pointing Loss",

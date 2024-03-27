@@ -1,7 +1,7 @@
-from defaults import *
+from components.defaults import *
 import random
 from enum import Enum
-from windmap import WindMap
+from components.windmap import WindMap
 
 # Balloon class
 class BalloonStatus(Enum):

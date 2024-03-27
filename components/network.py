@@ -1,4 +1,4 @@
-from defaults import *
+from components.defaults import *
 import networkx as nx
 import copy
 

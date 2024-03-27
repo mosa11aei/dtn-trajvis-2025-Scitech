@@ -1,4 +1,4 @@
-from defaults import *
+from components.defaults import *
 import matplotlib.pyplot as plt
 
 class PlotHelper:
