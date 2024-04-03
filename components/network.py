@@ -1,6 +1,8 @@
 from components.defaults import *
+from components.obstacle import ObstacleType
 import networkx as nx
 import copy
+import random
 
 class Network:
     nodes = []
@@ -17,6 +19,7 @@ class Network:
     path_weight = 0
     received_messages = 0
     sent_messages = 0
+    obstacles = None
 
     def generate_messages(self, balloon, amt):
         for i in range(1, amt):
@@ -28,6 +31,7 @@ class Network:
         self.path_weight = 0
         self.cg = nx.DiGraph()
         self.reconfigures = []
+        self.obstacles = []
         for balloon in args:
             self.nodes.append(balloon)
             self.path.append(balloon)
@@ -52,9 +56,25 @@ class Network:
             for rx in self.nodes:
                 if tx == rx:
                     continue
-                rp = rp_calculator(time, tx, rx)
+                
+                rp_modifier = 0
+                dead_node = False
 
-                if rp >= rx.antenna.sensitivity:
+                for obstacle in self.obstacles:
+                    if obstacle.otype == ObstacleType.ReceiverPower and rx.name in obstacle.config['appliesTo']:
+                        if random.random() < obstacle.config['chance']:
+                            rp_modifier = obstacle.config['modifier']
+                    elif obstacle.otype == ObstacleType.DeadNode:
+                        if obstacle.config['node'].name == rx.name:
+                            if random.random() < obstacle.config['chance']:
+                                dead_node = True
+                        elif obstacle.config['node'].name == tx.name:
+                            if random.random() < obstacle.config['chance']:
+                                dead_node = True
+        
+                rp = rp_calculator(time, tx, rx) + rp_modifier
+
+                if rp >= rx.antenna.sensitivity and not dead_node:
                     newGraph.add_edge(tx.name, rx.name, weight=rp)
                     self.connections[tx.name][rx.name] = rp
                 else:
@@ -128,3 +148,6 @@ class Network:
 
         self.message_queue = copy.deepcopy(copy_queue)
         self.generate_messages(self.start_node.name, 5)
+
+    def add_obstacle(self, Obstacle):
+        self.obstacles.append(Obstacle)
