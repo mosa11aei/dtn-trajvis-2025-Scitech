@@ -111,7 +111,7 @@ class Network:
                 'old': self.path,
                 'new': path,
                 'time': time,
-                'meaningful': weight > self.path_weight + self.THRESHHOLD
+                'meaningful': abs(weight - self.path_weight) > self.THRESHHOLD
             })
             self.path = path
             self.path_weight = weight
