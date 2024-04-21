@@ -11,7 +11,14 @@ This network is a stripped-away version of Delay (or Disruption) Tolerant Networ
 ```py
 MyNetwork = Network(b1, b2, b3... # all nodes in the network
                     start=b1, # source node
-                    end=bn) # destination node
+                    end=bn,
+                    generic_path=Path) # destination node
+
+"""
+The generic path is the standard path that data will take from the start node to the end node. This path can be used to compare how the reconfigured network improves over using a generic path as a function of the receiver power.
+
+Path structure: [<Name>, <Name>, <Name>, <Name>...]
+"""
 ```
 
 ## Methods
@@ -20,6 +27,10 @@ MyNetwork = Network(b1, b2, b3... # all nodes in the network
 
 Generate random messages at a given balloon, with a certain amount.
 
+### MyNetwork.calculate_total_rp(time, rp_calculator, path="Generic" or "Current")
+
+Calculate the total [TODO]
+
 ### MyNetwork.recalculate(time, rp_calculator)
 
 Recalculate the best contact graph at a given time. `rp_calculator` is a reference to a function that calculates receiver power. We populate this with `NetworkAnalyzer`'s `rp()` method.
@@ -27,6 +38,10 @@ Recalculate the best contact graph at a given time. `rp_calculator` is a referen
 ### MyNetwork.transmit(time)
 
 Transmit messages in accordance with the contact graph at a given time. This can be implemented along with the tick of the motion of a balloon (see [Balloon](./Balloon.md)).
+
+### MyNetwork.add_obstacle(Obstacle)
+
+Add an obstacle to the network. See the [Obstacle](/docs/Obstacle.md) page for more information.
 
 ## `Network` data
 

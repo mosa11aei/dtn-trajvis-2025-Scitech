@@ -16,6 +16,7 @@ class Network:
     start_node = ''
     end_node = ''
     path = []
+    generic_path = []
     path_weight = 0
     received_messages = 0
     sent_messages = 0
@@ -25,7 +26,7 @@ class Network:
         for i in range(1, amt):
             self.message_queue[balloon].append("ABCDDEADBEEF")
 
-    def __init__(self, *args, start, end):
+    def __init__(self, *args, start, end, generic_path):
         self.nodes = []
         self.path = []
         self.path_weight = 0
@@ -48,6 +49,30 @@ class Network:
         self.end_node = end
 
         self.generate_messages(self.start_node.name, 100)
+        self.generic_path = generic_path
+        
+        
+    def calculate_total_rp(self, time, rp_calculator, path="Generic"):
+        total_rp = 0
+        pathToUse = self.generic_path
+        if path == "Generic":
+            path = self.generic_path
+        elif path == "Current":
+            path = self.path
+        
+        for i in range(len(path)-1):
+           tx = path[i]
+           rx = path[0] if i == len(path)-1 else path[i+1]
+           
+           for i in self.nodes:
+               if i.name == tx:
+                   tx = i
+               if i.name == rx:
+                   rx = i
+           
+           total_rp += rp_calculator(time, tx, rx)
+    
+        return total_rp
 
     def recalculate(self, time, rp_calculator):
         newGraph = nx.DiGraph()
