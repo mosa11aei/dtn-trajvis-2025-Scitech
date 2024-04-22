@@ -59,6 +59,8 @@ class Network:
             path = self.generic_path
         elif path == "Current":
             path = self.path
+        else:
+            raise Exception("Invalid path type")
         
         for i in range(len(path)-1):
            tx = path[i]

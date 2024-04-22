@@ -29,7 +29,7 @@ Generate random messages at a given balloon, with a certain amount.
 
 ### MyNetwork.calculate_total_rp(time, rp_calculator, path="Generic" or "Current")
 
-Calculate the total [TODO]
+Calculate the total end-to-end (E2E) receiver power for a given path. A path that looks like `[1, 2, 3, 4, 5]` means the start node (1) goes through nodes 2, 3, 4 before reaching the end node (5). The receiver power between each tx/rx pair is added to get the E2E receiver power. `rp_calculator` is a reference to a function that calculates receiver power.
 
 ### MyNetwork.recalculate(time, rp_calculator)
 
