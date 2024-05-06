@@ -11,7 +11,7 @@ class Network:
     message_queue = {}
     stored = []
     forwarded = 0
-    THRESHHOLD = 5 # in dB
+    THRESHHOLD = 3 # in dB
     reconfigures = []
     start_node = ''
     end_node = ''
@@ -56,15 +56,16 @@ class Network:
         total_rp = 0
         pathToUse = self.generic_path
         if path == "Generic":
-            path = self.generic_path
+            pathToUse = self.generic_path
         elif path == "Current":
-            path = self.path
+            pathToUse = self.path
         else:
             raise Exception("Invalid path type")
         
-        for i in range(len(path)-1):
-           tx = path[i]
-           rx = path[0] if i == len(path)-1 else path[i+1]
+        OutOfSensitivity = False
+        for i in range(len(pathToUse)-1):
+           tx = pathToUse[i]
+           rx = pathToUse[0] if i == len(pathToUse)-1 else pathToUse[i+1]
            
            for i in self.nodes:
                if i.name == tx:
@@ -72,9 +73,12 @@ class Network:
                if i.name == rx:
                    rx = i
            
-           total_rp += rp_calculator(time, tx, rx)
-    
-        return total_rp
+           rp = rp_calculator(time, tx, rx)
+           total_rp += rp
+           if rp < rx.antenna.sensitivity:
+               OutOfSensitivity = True
+               
+        return total_rp, OutOfSensitivity
 
     def recalculate(self, time, rp_calculator):
         newGraph = nx.DiGraph()
@@ -124,24 +128,42 @@ class Network:
             
             if len(filtered_paths) == 0:
                 continue
-                
+                            
             weight_of_paths = [nx.path_weight(self.cg, j, weight='weight') for j in filtered_paths]
             return filtered_paths[weight_of_paths.index(max(weight_of_paths))], max(weight_of_paths)
 
         return [], 0
         
         
-    def transmit(self, time):
+    def transmit(self, time, rp_calculator):
         path, weight = self._calculate_si_path()
-        if self.path != path:
+        self.path_weight, _ = self.calculate_total_rp(time, rp_calculator, path="Current")
+        
+        if (weight != 0 and weight > self.path_weight):
             self.reconfigures.append({
                 'old': self.path,
                 'new': path,
                 'time': time,
-                'meaningful': abs(weight - self.path_weight) > self.THRESHHOLD
+                'meaningful': weight > self.path_weight + self.THRESHHOLD,
+                'old_weight': self.path_weight,
+                'new_weight': weight
             })
-            self.path = path
-            self.path_weight = weight
+            
+            if weight > self.path_weight + self.THRESHHOLD:
+                self.path = path
+                self.path_weight = weight
+        # elif (weight != self.path_weight and weight != 0 and path != self.path):
+        #     self.reconfigures.append({
+        #         'old': self.path,
+        #         'new': path,
+        #         'time': time,
+        #         'meaningful': False,
+        #         'old_weight': self.path_weight,
+        #         'new_weight': weight
+        #     })
+            
+        #     self.path = path
+        #     self.path_weight = weight    
         
         copy_queue = copy.deepcopy(self.message_queue)
         for balloon in self.nodes:
