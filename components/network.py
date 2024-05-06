@@ -11,11 +11,12 @@ class Network:
     message_queue = {}
     stored = []
     forwarded = 0
-    THRESHHOLD = 5 # in dB
+    THRESHHOLD = 3 # in dB
     reconfigures = []
     start_node = ''
     end_node = ''
     path = []
+    generic_path = []
     path_weight = 0
     received_messages = 0
     sent_messages = 0
@@ -25,7 +26,7 @@ class Network:
         for i in range(1, amt):
             self.message_queue[balloon].append("ABCDDEADBEEF")
 
-    def __init__(self, *args, start, end):
+    def __init__(self, *args, start, end, generic_path):
         self.nodes = []
         self.path = []
         self.path_weight = 0
@@ -48,6 +49,36 @@ class Network:
         self.end_node = end
 
         self.generate_messages(self.start_node.name, 100)
+        self.generic_path = generic_path
+        
+        
+    def calculate_total_rp(self, time, rp_calculator, path="Generic"):
+        total_rp = 0
+        pathToUse = self.generic_path
+        if path == "Generic":
+            pathToUse = self.generic_path
+        elif path == "Current":
+            pathToUse = self.path
+        else:
+            raise Exception("Invalid path type")
+        
+        OutOfSensitivity = False
+        for i in range(len(pathToUse)-1):
+           tx = pathToUse[i]
+           rx = pathToUse[0] if i == len(pathToUse)-1 else pathToUse[i+1]
+           
+           for i in self.nodes:
+               if i.name == tx:
+                   tx = i
+               if i.name == rx:
+                   rx = i
+           
+           rp = rp_calculator(time, tx, rx)
+           total_rp += rp
+           if rp < rx.antenna.sensitivity:
+               OutOfSensitivity = True
+               
+        return total_rp, OutOfSensitivity
 
     def recalculate(self, time, rp_calculator):
         newGraph = nx.DiGraph()
@@ -97,24 +128,42 @@ class Network:
             
             if len(filtered_paths) == 0:
                 continue
-                
+                            
             weight_of_paths = [nx.path_weight(self.cg, j, weight='weight') for j in filtered_paths]
             return filtered_paths[weight_of_paths.index(max(weight_of_paths))], max(weight_of_paths)
 
         return [], 0
         
         
-    def transmit(self, time):
+    def transmit(self, time, rp_calculator):
         path, weight = self._calculate_si_path()
-        if self.path != path:
+        self.path_weight, _ = self.calculate_total_rp(time, rp_calculator, path="Current")
+        
+        if (weight != 0 and weight > self.path_weight):
             self.reconfigures.append({
                 'old': self.path,
                 'new': path,
                 'time': time,
-                'meaningful': abs(weight - self.path_weight) > self.THRESHHOLD
+                'meaningful': weight > self.path_weight + self.THRESHHOLD,
+                'old_weight': self.path_weight,
+                'new_weight': weight
             })
-            self.path = path
-            self.path_weight = weight
+            
+            if weight > self.path_weight + self.THRESHHOLD:
+                self.path = path
+                self.path_weight = weight
+        # elif (weight != self.path_weight and weight != 0 and path != self.path):
+        #     self.reconfigures.append({
+        #         'old': self.path,
+        #         'new': path,
+        #         'time': time,
+        #         'meaningful': False,
+        #         'old_weight': self.path_weight,
+        #         'new_weight': weight
+        #     })
+            
+        #     self.path = path
+        #     self.path_weight = weight    
         
         copy_queue = copy.deepcopy(self.message_queue)
         for balloon in self.nodes:
