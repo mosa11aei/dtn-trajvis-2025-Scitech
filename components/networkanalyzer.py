@@ -2,6 +2,25 @@ from components.defaults import *
 import random
 from enum import Enum
 import matplotlib.pyplot as plt
+from functions.var_datarate import data_rate_for_desired_link_margin
+from typing import NamedTuple
+
+class LinkBudgetParams(NamedTuple):
+    transmitter_frequency: float    # in GHz
+    transmitter_power: float        # in W
+    transmitter_antenna_gain: float # in dB
+    transmitter_line_loss: float    # in dB
+    distance: float                 # in km
+    freespace_loss: float           # in dB
+    atmospheric_loss: float         # in dB
+    receiver_antenna_gain: float    # in dB
+    reciever_input_loss: float      # in dB
+    pointing_loss: float            # in dB
+    receiver_NF: float              # in dB
+    modulation_rate: float          # dimless
+    computer_imp_efficiency: float  # dimless
+    Eb_N0_req: float                # in dB
+    link_margin_req: float          # in dB
 
 class RadioType(Enum):
     Rx = 0, "Transmit"
@@ -109,6 +128,28 @@ class NetworkAnalyzer:
         rp = tx.antenna.transmit_power + tx.antenna.gain + rx.antenna.gain - self._pointing_loss(time, tx, rx) - self._free_space_loss(time, tx, rx)
         return rp
     
+    # variable data rate calculation
+    def data_rate(self, tx, rx, time, desired_link_margin):
+        params = LinkBudgetParams(
+            transmitter_frequency = tx.antenna.freq / 1e9,
+            transmitter_power = (10 ** (tx.antenna.transmit_power/10))/1000,          
+            transmitter_antenna_gain = tx.antenna.gain,  
+            transmitter_line_loss = 0.0001,
+            distance = self._calculate_distance(time, tx, rx),
+            freespace_loss = self._free_space_loss(time, tx, rx),                
+            atmospheric_loss = 0.05,
+            receiver_antenna_gain = rx.antenna.gain,   
+            reciever_input_loss = 0.0001,
+            pointing_loss = self._pointing_loss(time, tx, rx),    
+            receiver_NF = 5,                
+            modulation_rate = 0.8,          
+            computer_imp_efficiency = 0.95, 
+            Eb_N0_req = 5.41,      
+            link_margin_req = 3.0         
+        )
+                
+        return data_rate_for_desired_link_margin(params, desired_link_margin)        
+        
     def __init__(self, *args):
         self._balloons = []
         for balloon in args:

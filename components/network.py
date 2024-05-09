@@ -79,6 +79,32 @@ class Network:
                OutOfSensitivity = True
                
         return total_rp, OutOfSensitivity
+    
+    def data_rate_path(self, time, dr_calculator, path="Generic"):
+        pathToUse = self.generic_path
+        if path == "Generic":
+            pathToUse = self.generic_path
+        elif path == "Current":
+            pathToUse = self.path
+        else:
+            raise Exception("Invalid path type")
+        
+        min_dr = 1e100
+        for i in range(len(pathToUse)-1):
+           tx = pathToUse[i]
+           rx = pathToUse[0] if i == len(pathToUse)-1 else pathToUse[i+1]
+           
+           for i in self.nodes:
+               if i.name == tx:
+                   tx = i
+               if i.name == rx:
+                   rx = i
+           
+           dr = dr_calculator(time=time, tx=tx, rx=rx, desired_link_margin=self.THRESHHOLD)
+           if dr < min_dr:
+               min_dr = dr
+               
+        return min_dr
 
     def recalculate(self, time, rp_calculator):
         newGraph = nx.DiGraph()
