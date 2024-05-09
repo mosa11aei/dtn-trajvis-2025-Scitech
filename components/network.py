@@ -48,6 +48,65 @@ class Network:
         self.end_node = end
 
         self.generate_messages(self.start_node.name, 100)
+<<<<<<< Updated upstream
+=======
+        self.generic_path = generic_path
+        
+        
+    def calculate_total_rp(self, time, rp_calculator, path="Generic"):
+        total_rp = 0
+        pathToUse = self.generic_path
+        if path == "Generic":
+            pathToUse = self.generic_path
+        elif path == "Current":
+            pathToUse = self.path
+        else:
+            raise Exception("Invalid path type")
+        
+        OutOfSensitivity = False
+        for i in range(len(pathToUse)-1):
+           tx = pathToUse[i]
+           rx = pathToUse[0] if i == len(pathToUse)-1 else pathToUse[i+1]
+           
+           for i in self.nodes:
+               if i.name == tx:
+                   tx = i
+               if i.name == rx:
+                   rx = i
+           
+           rp = rp_calculator(time, tx, rx)
+           total_rp += rp
+           if rp < rx.antenna.sensitivity:
+               OutOfSensitivity = True
+               
+        return total_rp, OutOfSensitivity
+    
+    def data_rate_path(self, time, dr_calculator, path="Generic"):
+        pathToUse = self.generic_path
+        if path == "Generic":
+            pathToUse = self.generic_path
+        elif path == "Current":
+            pathToUse = self.path
+        else:
+            raise Exception("Invalid path type")
+        
+        min_dr = 1e100
+        for i in range(len(pathToUse)-1):
+           tx = pathToUse[i]
+           rx = pathToUse[0] if i == len(pathToUse)-1 else pathToUse[i+1]
+           
+           for i in self.nodes:
+               if i.name == tx:
+                   tx = i
+               if i.name == rx:
+                   rx = i
+           
+           dr = dr_calculator(time=time, tx=tx, rx=rx, desired_link_margin=self.THRESHHOLD)
+           if dr < min_dr:
+               min_dr = dr
+               
+        return min_dr
+>>>>>>> Stashed changes
 
     def recalculate(self, time, rp_calculator):
         newGraph = nx.DiGraph()
