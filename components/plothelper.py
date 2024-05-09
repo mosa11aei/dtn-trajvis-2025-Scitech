@@ -71,4 +71,5 @@ class PlotHelper:
     def zoom_in(self, x, y):
         plt.xlim(x-len(self._compass_matrix)/10, x+len(self._compass_matrix)/10)
         plt.ylim(y-len(self._compass_matrix)/10, y+len(self._compass_matrix)/10)
+        plt.title(f"Wind Map at ({x}, {y})")
             
