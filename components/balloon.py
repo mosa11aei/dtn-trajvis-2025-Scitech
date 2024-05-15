@@ -108,9 +108,9 @@ class Balloon:
     def tick(self):
         if self.current_status == BalloonStatus.POP:
             self.current_status = BalloonStatus.FALL
+            self.pop_point = [self.plt_x[len(self.plt_x)-1], self.plt_y[len(self.plt_y)-1]]
         if self.current_alt > 95000 and self.current_status == BalloonStatus.ASCENT:
             self.current_status = BalloonStatus.POP
-            self.pop_point = [self.plt_x[len(self.plt_x)-1], self.plt_y[len(self.plt_y)-1]]
             print(self.name, " popped at ", self.current_time)
 
         if np.ceil(self.plt_x[len(self.plt_x)-1]) > len(self.wm.compass())*self.wm.step/2 or \

@@ -63,9 +63,14 @@ class PlotHelper:
         
         for balloon in args:
             plt.plot(balloon.plt_x, balloon.plt_y, color=balloon.color, label=balloon.name)
-            plt.plot(balloon.pop_point[0], balloon.pop_point[1], 'ro')
+            plt.plot(balloon.plt_x[0], balloon.plt_y[0], 'g*')
+            print(balloon.pop_point[0], balloon.pop_point[1])
+            plt.plot(balloon.pop_point[0], balloon.pop_point[1], 'bx')
+            plt.plot(balloon.plt_x[len(balloon.plt_x)-1], balloon.plt_y[len(balloon.plt_y)-1], 'r*')
             
-        plt.title("Wind Map") 
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.title("Balloon Trajectory on WM") 
         plt.legend()
 
     def zoom_in(self, x, y):
