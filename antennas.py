@@ -1,4 +1,4 @@
-from components.networkanalyzer import Antenna, RadioType
+from TrajVis.components.networkanalyzer import Antenna, RadioType
 
 CSSlot = Antenna(name="CubeSat Slot (#F)",
                     gain=4.98,
