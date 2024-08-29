@@ -58,7 +58,7 @@ class NetworkAnalyzer:
         _dir_plot.set_xlim(-1, 1)
         _dir_plot.set_ylim(-1, 1)
         _dir_plot.set_zlim(-1, 1)
-        plt.title("Direction of antenna of all balloons")
+        plt.title("Pointing of Antennas on Balloons at t=" + str(time))
         plt.legend()
         plt.show()
 
