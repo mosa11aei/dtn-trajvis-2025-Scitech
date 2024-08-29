@@ -1,0 +1,3 @@
+[submodule "TrajVis"]
+	path = TrajVis
+	url = https://github.com/mosa11aei/TrajVis.git
