@@ -1,3 +1,7 @@
+"""
+All but 2 of the antennas used in the research from the paper are defined here. The other 2 are in Trajvis/components/sample_antennas.py
+"""
+
 from TrajVis.components.networkanalyzer import Antenna, RadioType
 
 CSSlot = Antenna(name="CubeSat Slot (#F)",
